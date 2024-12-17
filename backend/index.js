@@ -22,15 +22,18 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage })
-app.post('/uploadfile',upload.single("file"), (req, res) => {
+app.post('/uploadfile',upload.single("file"), (req, res) =>{
   
   console.log(req.file);
+  console.log(req.body.password);
+  console.log(req.body.action);
+  
 
 })
-app.post('/uploaddata',(req,res)=> {
-  const  password = req.body.password;
+// app.post('/uploaddata',(req,res)=> {
+//   const  password = req.body.password;
 
-})
+// })
 
 
 app.listen(port, () => {

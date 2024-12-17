@@ -19,14 +19,16 @@ function sending() {
       alert('password must be 8 to 16 characters long');
     }
     else{
-      const user_data={
-        "password":pass,
-        "action":act
-      }
+      // const user_data={
+      //   "password":pass,
+      //   "action":act
+      // }
       const formData = new FormData();
       formData.append('file', data);
+      formData.append('password', pass);
+      formData.append('action', act);
       axios.post("http://localhost:3000/uploadfile",formData);
-      axios.post("http://localhost:3000/uploaddata",user_data);
+      // axios.post("http://localhost:3000/uploaddata",user_data);
       console.log(formData);
       
       
