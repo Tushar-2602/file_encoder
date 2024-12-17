@@ -24,10 +24,13 @@ def encrypt_file(file_name):
    original_file = open(original_file_name,"rb")
    binary_data=original_file.read()
    original_file.close()
-   print(binary_data)
+   string_binary_data=binary_data.hex()
+
+   print(string_binary_data)
    encrypt_file_name="C:\\Users\\TUSHAR PC\\Desktop\projects\\file_encoder\\backend\\files\\enc_"+file_name
    encrypted_file = open(encrypt_file_name,"wb")
-   encrypted_file.write(binary_data)
+   new_binary_data=(string_binary_data.encode())
+   encrypted_file.write(bytes.fromhex(string_binary_data))
    encrypted_file.close()
 
    
