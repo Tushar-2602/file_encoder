@@ -12,26 +12,30 @@ app=Flask(__name__)
 @app.route('/',methods=["POST"])
 def handle_call():
     file_data =dict(request.get_json())
-    global file_name 
+   #  global file_name 
     file_name=file_data["file_name"]
-    global action
+   #  global action
     action=file_data["action"]
+   #  global password
+    password = file_data["password"]
+    status="ok"
     if(action=="encrypt"):
-     encrypt_file(file_name)
+     encrypt_file(file_name,password)
 
     if(action=="decrypt"):
-     decrypt_file(file_name)
+     status=decrypt_file(file_name,password)
 
-    return jsonify({"gbr":0})
+    print(file_name," ",action," ",password)
+    return jsonify({"decrypting":status})
 
-def encrypt_file(file_name):
+def encrypt_file(file_name,password):
    file_name=str(file_name)
    original_file_name="C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+file_name
    original_file = open(original_file_name,"rb")
    binary_data=original_file.read()
    original_file.close()
    string_binary_data=binary_data.hex()
-   password = "password".encode()
+   pswd = password.encode()
    salt = b'\xe2\xaf\xbc:\xdd'
 #    key1 = Fernet.generate_key()
 #    f1 = Fernet(key1)
@@ -41,34 +45,88 @@ def encrypt_file(file_name):
        salt=salt,
        iterations=390000,
    )
-   key = base64.urlsafe_b64encode(kdf.derive(password))
+   key = base64.urlsafe_b64encode(kdf.derive(pswd))
    f = Fernet(key)
    token = f.encrypt(string_binary_data.encode())
-  
-
+   
    # b'...'
+   # flag=1
+   # try:
+   #  new=(f.decrypt(token)).decode()
+   # except Exception:
+   #  flag=0
+   #  return "wrong key" #print("worng key")
+   # b'Secret message!'
+   ext=""
+   while(1):
+    n=file_name[-1]
+    file_name=file_name[:-1]
+    ext+=n
+    if(n=='.'):
+      break
+  
+   ext=''.join(reversed(ext))
+   encrypt_file_name="C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+file_name+".txt"
+   # if(flag):
+   encrypted_file = open(encrypt_file_name,"w")
+   encrypted_file.write((token.decode()+ext))
+   encrypted_file.close()
+   os.remove(original_file_name)
+   
+
+   
+   pass
+
+
+def decrypt_file(file_name,password):
+   file_name=str(file_name)
+   original_file_name="C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+file_name
+   original_file = open(original_file_name,"r")
+   text_data=original_file.read()
+   original_file.close()
+   file_name=file_name[:-4]
+   ext=""
+   while(1):
+      n=text_data[-1]
+      text_data=text_data[:-1]
+      ext+=n
+      if(n=='.'):
+         break
+   ext=''.join(reversed(ext))
+   pswd = password.encode()
+   salt = b'\xe2\xaf\xbc:\xdd'
+#    key1 = Fernet.generate_key()
+#    f1 = Fernet(key1)
+   kdf = PBKDF2HMAC(
+       algorithm=hashes.SHA256(),
+       length=32,
+       salt=salt,
+       iterations=390000,
+   )
+   key = base64.urlsafe_b64encode(kdf.derive(pswd))
+   f = Fernet(key)
    flag=1
    try:
-    new=(f.decrypt(token)).decode()
+    string_data_in_hex=(f.decrypt(text_data.encode())).decode()
    except Exception:
     flag=0
+    os.remove(original_file_name)
     return "wrong key" #print("worng key")
-   # b'Secret message!'
-
-   encrypt_file_name="C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\enc_"+file_name
+   
    if(flag):
-     encrypted_file = open(encrypt_file_name,"wb")
-     encrypted_file.write(bytes.fromhex(new))
-     encrypted_file.close()
+    decrypt_file_name="C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+file_name+ext
+    decrypted_file = open(decrypt_file_name,"wb")
+    decrypted_file.write(bytes.fromhex(string_data_in_hex))
+    decrypted_file.close()
+    os.remove(original_file_name)
+    return "ok"
    
+    
+#encrypt_file("hello.jpg","passsword")
+#decrypt_file("hello.txt","passsword")
 
-   
-   pass
-encrypt_file("hello.jpg")
-
-def decrypt_file(file_name):
-   
-   pass
+    
+      
 
 
 
