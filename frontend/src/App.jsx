@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 function App() {
 const [act,setact]=useState("default");
 const [disb,setdisb]=useState(false);
 const [pass,setpass]=useState("");
 const [data,setdata]=useState(1);
+
 useEffect(()=>{
   if (act=="default") {
     setdisb(true)
@@ -33,14 +35,19 @@ function sending() {
       formData.append('password', pass);
       formData.append('action', act);
       axios.post("http://localhost:3000/uploadfile",formData).then((res)=>{
-        // alert("wrong key")
         console.log(res.data.status);
         console.log(res.data.sent_file_name);
         if (res.data.status=="wrong key") {
           alert('wrong key');
         }
+        else if (res.data.status=="ok" && res.data.sent_file_name!="default") {
+          window.location.href=("http://localhost:3000/downloadfile?down_file_name="+res.data.sent_file_name)
+          console.log("www");
+          
+        }
+        return res;
         
-      }).then
+      })
       // axios.post("http://localhost:3000/uploaddata",user_data);
       console.log(formData);
       
@@ -58,6 +65,8 @@ function sending() {
       <input type="file" name="encrypt" id="fileip" disabled={disb} onChange={(e)=>{setdata(e.target.files[0])}} /><br />
       <input type="password" name="" id="" className="m-5 border-2 border-sky-500 " placeholder="password" onChange={(e)=>setpass(e.target.value)}/> <br />
       <button type="button" className="m-5 border-2 border-sky-500 cursor-pointer" onClick={sending}> submit</button>
+      
+      
 
 
     </form>

@@ -3,8 +3,10 @@ import axios from "axios";
 import cors from "cors";
 import bodyParser from 'body-parser';
 import pkg from 'body-parser'
+import fs from 'fs'
 import multer from 'multer';
 import 'dotenv/config'
+import { log } from 'console';
 const {json} = pkg;
 const app = express()
 const port = process.env.PORT;
@@ -42,15 +44,26 @@ app.post('/uploadfile',upload.single("file"), (req, res) =>{
   //let str=resp.data.loaded_file_name
 
   console.log(resp.data.loaded_file_name);
+  
   res.send({"status":order,"sent_file_name":resp.data.loaded_file_name})
 })
 
 
 })
-// app.post('/uploaddata',(req,res)=> {
-//   const  password = req.body.password;
+app.get('/downloadfile', function(req, res) {
+  const down_file_name=req.query.down_file_name
+  res.download("C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+down_file_name,(err)=>{
+   if(!err) fs.unlink("C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+down_file_name,(err)=>{console.log(err);
+  })
+  
+  })
+  
+  
+  
+  
+})
 
-// })
+
 
 
 app.listen(port, () => {
