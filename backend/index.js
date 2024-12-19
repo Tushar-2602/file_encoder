@@ -25,8 +25,8 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage })
-let order="oek"
 app.post('/uploadfile',upload.single("file"), (req, res) =>{
+  let order="oek"
   
   console.log(req.file);
   console.log(req.body.password);
@@ -37,9 +37,12 @@ app.post('/uploadfile',upload.single("file"), (req, res) =>{
     "action":req.body.action,
     "password":req.body.password
 }).then((resp)=>{order=resp.data.decrypting;
+                return resp
 }).then((resp)=>{console.log(order)
-   
-  res.send({"status":order})
+  //let str=resp.data.loaded_file_name
+
+  console.log(resp.data.loaded_file_name);
+  res.send({"status":order,"sent_file_name":resp.data.loaded_file_name})
 })
 
 

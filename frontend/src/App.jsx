@@ -26,7 +26,7 @@ function sending() {
       //   "password":pass,
       //   "action":act
       // }
-      console.log(data.name);
+      //console.log(data.name);
       
       const formData = new FormData();
       formData.append('file', data);
@@ -35,11 +35,12 @@ function sending() {
       axios.post("http://localhost:3000/uploadfile",formData).then((res)=>{
         // alert("wrong key")
         console.log(res.data.status);
+        console.log(res.data.sent_file_name);
         if (res.data.status=="wrong key") {
           alert('wrong key');
         }
         
-      });
+      }).then
       // axios.post("http://localhost:3000/uploaddata",user_data);
       console.log(formData);
       

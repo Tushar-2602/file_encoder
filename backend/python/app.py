@@ -8,9 +8,12 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 app=Flask(__name__)
 
-
+global send_file_name 
+send_file_name = "delfault"
 @app.route('/',methods=["POST"])
 def handle_call():
+    global send_file_name 
+    send_file_name = "delfault"
     file_data =dict(request.get_json())
    #  global file_name 
     file_name=file_data["file_name"]
@@ -26,7 +29,9 @@ def handle_call():
      status=decrypt_file(file_name,password)
 
     print(file_name," ",action," ",password)
-    return jsonify({"decrypting":status})
+    return jsonify({"decrypting":status,
+                    "loaded_file_name":send_file_name
+                    })
 
 def encrypt_file(file_name,password):
    file_name=str(file_name)
@@ -68,6 +73,8 @@ def encrypt_file(file_name,password):
    ext=''.join(reversed(ext))
    encrypt_file_name="C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+file_name+".txt"
    # if(flag):
+   global send_file_name 
+   send_file_name=file_name+".txt"
    encrypted_file = open(encrypt_file_name,"w")
    encrypted_file.write((token.decode()+ext))
    encrypted_file.close()
@@ -115,6 +122,8 @@ def decrypt_file(file_name,password):
    
    if(flag):
     decrypt_file_name="C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+file_name+ext
+    global send_file_name 
+    send_file_name=file_name+ext
     decrypted_file = open(decrypt_file_name,"wb")
     decrypted_file.write(bytes.fromhex(string_data_in_hex))
     decrypted_file.close()
