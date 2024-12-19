@@ -15,7 +15,10 @@ function sending() {
   if (data==1) {
     alert('please select file');
   }
-    if (pass.length<8 || pass.length>16) {
+  else if (act=="decrypt" && (!(data.name.includes('.txt')))) {
+    alert('encrypted file must be a text file')
+  }
+    else if (pass.length<8 || pass.length>16) {
       alert('password must be 8 to 16 characters long');
     }
     else{
@@ -23,11 +26,20 @@ function sending() {
       //   "password":pass,
       //   "action":act
       // }
+      console.log(data.name);
+      
       const formData = new FormData();
       formData.append('file', data);
       formData.append('password', pass);
       formData.append('action', act);
-      axios.post("http://localhost:3000/uploadfile",formData);
+      axios.post("http://localhost:3000/uploadfile",formData).then((res)=>{
+        // alert("wrong key")
+        console.log(res.data.status);
+        if (res.data.status=="wrong key") {
+          alert('wrong key');
+        }
+        
+      });
       // axios.post("http://localhost:3000/uploaddata",user_data);
       console.log(formData);
       
