@@ -40,10 +40,9 @@ app.post('/uploadfile',upload.single("file"), (req, res) =>{
     "password":req.body.password
 }).then((resp)=>{order=resp.data.decrypting;
                 return resp
-}).then((resp)=>{console.log(order)
-  //let str=resp.data.loaded_file_name
+}).then((resp)=>{
+  
 
-  console.log(resp.data.loaded_file_name);
   
   res.send({"status":order,"sent_file_name":resp.data.loaded_file_name})
 })

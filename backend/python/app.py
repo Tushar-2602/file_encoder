@@ -1,7 +1,7 @@
 from flask import Flask,request,jsonify
 import base64
 import os
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet            
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
@@ -9,17 +9,17 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 app=Flask(__name__)
 
 global send_file_name 
-send_file_name = "delfault"
+send_file_name = "default"        # default file name that is to be sent 
 @app.route('/',methods=["POST"])
-def handle_call():
+def handle_call():                # flask api to handle encrypting and decripting files
     global send_file_name 
     send_file_name = "delfault"
     file_data =dict(request.get_json())
-   #  global file_name 
+   
     file_name=file_data["file_name"]
-   #  global action
-    action=file_data["action"]
-   #  global password
+ 
+    action=file_data["action"]       # tells whether the file is to be encrypted or decrypted
+ 
     password = file_data["password"]
     status="ok"
     if(action=="encrypt"):
@@ -28,7 +28,7 @@ def handle_call():
     if(action=="decrypt"):
      status=decrypt_file(file_name,password)
 
-    print(file_name," ",action," ",password)
+   
     return jsonify({"decrypting":status,
                     "loaded_file_name":send_file_name
                     })
@@ -42,8 +42,6 @@ def encrypt_file(file_name,password):
    string_binary_data=binary_data.hex()
    pswd = password.encode()
    salt = b'\xe2\xaf\xbc:\xdd'
-#    key1 = Fernet.generate_key()
-#    f1 = Fernet(key1)
    kdf = PBKDF2HMAC(
        algorithm=hashes.SHA256(),
        length=32,
@@ -53,15 +51,6 @@ def encrypt_file(file_name,password):
    key = base64.urlsafe_b64encode(kdf.derive(pswd))
    f = Fernet(key)
    token = f.encrypt(string_binary_data.encode())
-   
-   # b'...'
-   # flag=1
-   # try:
-   #  new=(f.decrypt(token)).decode()
-   # except Exception:
-   #  flag=0
-   #  return "wrong key" #print("worng key")
-   # b'Secret message!'
    ext=""
    while(1):
     n=file_name[-1]
@@ -72,7 +61,6 @@ def encrypt_file(file_name,password):
   
    ext=''.join(reversed(ext))
    encrypt_file_name="C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+file_name+".txt"
-   # if(flag):
    global send_file_name 
    send_file_name=file_name+".txt"
    encrypted_file = open(encrypt_file_name,"w")
@@ -102,8 +90,6 @@ def decrypt_file(file_name,password):
    ext=''.join(reversed(ext))
    pswd = password.encode()
    salt = b'\xe2\xaf\xbc:\xdd'
-#    key1 = Fernet.generate_key()
-#    f1 = Fernet(key1)
    kdf = PBKDF2HMAC(
        algorithm=hashes.SHA256(),
        length=32,
@@ -118,7 +104,7 @@ def decrypt_file(file_name,password):
    except Exception:
     flag=0
     os.remove(original_file_name)
-    return "wrong key" #print("worng key")
+    return "wrong key"
    
    if(flag):
     decrypt_file_name="C:\\Users\\TUSHAR PC\\Desktop\\projects\\file_encoder\\backend\\files\\"+file_name+ext
@@ -129,10 +115,7 @@ def decrypt_file(file_name,password):
     decrypted_file.close()
     os.remove(original_file_name)
     return "ok"
-   
-    
-#encrypt_file("hello.jpg","passsword")
-#decrypt_file("hello.txt","passsword")
+
 
     
       

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 function App() {
 const [act,setact]=useState("default");
@@ -14,42 +13,36 @@ useEffect(()=>{
   if (act!="default") setdisb(false)
 },[act]);
 function sending() {
-  if (data==1) {
+  if (data==1 || data==null || data==undefined || data.length==0) {
     alert('please select file');
   }
   else if (act=="decrypt" && (!(data.name.includes('.txt')))) {
     alert('encrypted file must be a text file')
   }
+  else if (act=="default"||act==null||act==undefined) {
+    alert('please select whether to encrypt or decrypt')
+  }
     else if (pass.length<8 || pass.length>16) {
       alert('password must be 8 to 16 characters long');
     }
     else{
-      // const user_data={
-      //   "password":pass,
-      //   "action":act
-      // }
-      //console.log(data.name);
-      
       const formData = new FormData();
       formData.append('file', data);
       formData.append('password', pass);
       formData.append('action', act);
       axios.post("http://localhost:3000/uploadfile",formData).then((res)=>{
-        console.log(res.data.status);
-        console.log(res.data.sent_file_name);
         if (res.data.status=="wrong key") {
           alert('wrong key');
         }
         else if (res.data.status=="ok" && res.data.sent_file_name!="default") {
           window.location.href=("http://localhost:3000/downloadfile?down_file_name="+res.data.sent_file_name)
-          console.log("www");
           
         }
         return res;
         
       })
-      // axios.post("http://localhost:3000/uploaddata",user_data);
-      console.log(formData);
+      
+     
       
       
     }
